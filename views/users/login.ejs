@@ -1,0 +1,38 @@
+<% layout("/layouts/biolerplate.ejs") %>
+
+<body class="bg-light">
+  <div class="container py-5">
+    <div class="row justify-content-center">
+      <div class="col-md-6 col-lg-5">
+        <div class="card shadow-lg rounded-3 border-0">
+          <div class="card-body p-4">
+            <h3 class="text-center mb-4 text-primary fw-bold">Smart Waste Management System</h3>
+            <% if (locals.error) { %>
+              <div class="alert alert-danger"><%= error %></div>
+            <% } %>
+            <% if (locals.success) { %>
+              <div class="alert alert-success"><%= success %></div>
+            <% } %>
+            <form action="/users/login" method="post" class="needs-validation" novalidate>
+              <div class="mb-3">
+                <label for="username" class="form-label">Username</label>
+                <input type="text" class="form-control" name="User[username]" id="username" required>
+                <div class="valid-feedback">Looks good!</div>
+                <div class="invalid-feedback">Please enter your username.</div>
+              </div>
+              <div class="mb-3">
+                <label for="password" class="form-label">Password</label>
+                <input type="password" class="form-control" name="User[password]" id="password" required>
+                <div class="valid-feedback">Looks good!</div>
+                <div class="invalid-feedback">Please enter your password.</div>
+              </div>
+              <div class="d-grid">
+                <button type="submit" class="btn btn-success btn-lg">Login</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
