@@ -12,6 +12,7 @@ const ejsMate = require("ejs-mate");
 const userRoute = require("./routes/userRoute");
 const complaintRoute = require("./routes/complaintRoute");
 const historyRoute = require("./routes/history");
+const workerRoute=require("./routes/workerRoute");
 const ExpressError = require("./utils/ExpressError");
 const app = express();
 app.engine("ejs", ejsMate);
@@ -35,6 +36,7 @@ app.use(
 app.use(flash());
 app.use((req, res, next) => {
   res.locals.currentUser = req.session.user || null;
+  res.locals.currentEmployee = req.session.employee || null; 
   res.locals.success = req.flash("success");
   res.locals.error = req.flash("error");
   next();
@@ -47,6 +49,7 @@ mongoose
   .catch((e) => console.log("Database Connection Error:", e));
 
 app.get("/", (req, res) => res.render("home"));
+app.use("/workers",workerRoute);
 app.use("/users", userRoute);
 app.use("/complaints", complaintRoute);
 app.use("/history", historyRoute);

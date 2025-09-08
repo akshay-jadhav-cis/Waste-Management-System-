@@ -12,3 +12,23 @@ body {
 footer {
     flex-shrink: 0; 
 }
+.card {
+    background: #ffffff;
+    border: none;
+}
+
+.btn-primary {
+    background: linear-gradient(90deg, #007bff, #0056b3);
+    border: none;
+    transition: 0.3s ease;
+}
+
+.btn-primary:hover {
+    background: linear-gradient(90deg, #0056b3, #003d80);
+    transform: scale(1.02);
+}
+
+.form-control:focus {
+    box-shadow: 0 0 6px rgba(0, 123, 255, 0.5);
+    border-color: #007bff;
+}

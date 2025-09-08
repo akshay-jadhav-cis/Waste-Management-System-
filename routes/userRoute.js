@@ -73,8 +73,8 @@ userRoute.post(
       password: await hashPassword(value.password),
     });
     await newUser.save();
-    req.flash("success", "Signup successful! Please login.");
-    res.redirect("/users/login");
+    req.flash("success", "Signup successful!");
+    res.redirect("/");
   })
 );
 module.exports = userRoute;
