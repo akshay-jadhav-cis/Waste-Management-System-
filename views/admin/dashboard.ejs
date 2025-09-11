@@ -1,0 +1,87 @@
+<% layout("layouts/biolerplate") %>
+
+<body class="bg-light">
+  <div class="container py-5">
+    <h2 class="mb-4 text-center text-primary">Admin Dashboard</h2>
+
+    <!-- Flash Messages -->
+    <% if (success && success.length > 0) { %>
+      <div class="alert alert-success"><%= success %></div>
+    <% } %>
+    <% if (error && error.length > 0) { %>
+      <div class="alert alert-danger"><%= error %></div>
+    <% } %>
+
+    <% if (complaints && complaints.length > 0) { %>
+      <div class="table-responsive">
+        <table class="table table-bordered table-hover bg-white">
+          <thead class="table-light">
+            <tr>
+              <th>Sr.no</th>
+              <th>User Name</th>
+              <th>Garbage</th>
+              <th>Description</th>
+              <th>Address</th>
+              <th>Assigned To</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% complaints.forEach((complaint, index) => { %>
+              <tr>
+                <td><%= index + 1 %></td>
+                <td>
+                      <% if (complaint.user) { %>
+                    <%= complaint.user.username %> 
+                    <% } else if (complaint.admin) { %>
+                  <%= complaint.admin.name %>
+                 <% } %>
+                </td>
+                <td><%= complaint.garbageType %></td>
+                <td><%= complaint.description %></td>
+                <td><%= complaint.address %></td>
+                <td><%= complaint.assignedTo ? complaint.assignedTo.name : "Not Assigned" %></td>
+                <td>
+                  <% if (complaint.status === "done") { %>
+                    <span class="badge bg-success">Done</span>
+                  <% } else { %>
+                    <span class="badge bg-warning text-dark">Pending</span>
+                  <% } %>
+                </td>
+                <td>
+                  <!-- Mark as Done -->
+                  <% if (complaint.status !== "done") { %>
+                    <form action="/admin/complaints/<%= complaint._id %>/done" method="POST" class="mb-1">
+                      <button class="btn btn-success btn-sm w-100">Done</button>
+                    </form>
+                  <% } %>
+
+                  <!-- Assign to Employee -->
+                  <form action="/admin/complaints/<%= complaint._id %>/assign" method="POST" class="mb-1">
+                    <select class="form-select form-select-sm mb-1" name="employeeId" required>
+                      <option value="">Assign...</option>
+                      <% employees.forEach(emp => { %>
+                        <option value="<%= emp._id %>" <%= complaint.assignedTo && complaint.assignedTo._id.equals(emp._id) ? "selected" : "" %>>
+                          <%= emp.name %> - <%= emp.position %>
+                        </option>
+                      <% }) %>
+                    </select>
+                    <button class="btn btn-primary btn-sm w-100">Assign</button>
+                  </form>
+
+                  <!-- Delete Complaint -->
+                  <form action="/admin/complaints/delete/<%= complaint._id %>" method="POST">
+                    <button class="btn btn-danger btn-sm w-100">Delete</button>
+                  </form>
+                </td>
+              </tr>
+            <% }) %>
+          </tbody>
+        </table>
+      </div>
+    <% } else { %>
+      <p class="text-center text-muted">No complaints found.</p>
+    <% } %>
+  </div>
+</body>

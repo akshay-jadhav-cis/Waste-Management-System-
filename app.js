@@ -10,10 +10,12 @@ const flash = require("connect-flash");
 const cors = require("cors");
 const ejsMate = require("ejs-mate");
 const userRoute = require("./routes/userRoute");
-const complaintRoute = require("./routes/complaintRoute");
 const historyRoute = require("./routes/history");
 const workerRoute=require("./routes/workerRoute");
 const ExpressError = require("./utils/ExpressError");
+const adminRoute = require("./routes/adminRoute");
+const userComplaintRoute = require("./routes/userComplaintRoute");
+const adminComplaintRoute = require("./routes/adminComplaintRoute");
 const app = express();
 app.engine("ejs", ejsMate);
 app.set("view engine", "ejs");
@@ -37,6 +39,7 @@ app.use(flash());
 app.use((req, res, next) => {
   res.locals.currentUser = req.session.user || null;
   res.locals.currentEmployee = req.session.employee || null; 
+  res.locals.currentAdmin=req.session.admin||null;
   res.locals.success = req.flash("success");
   res.locals.error = req.flash("error");
   next();
@@ -48,11 +51,18 @@ mongoose
   .then(() => console.log("Database Successfully Connected"))
   .catch((e) => console.log("Database Connection Error:", e));
 
-app.get("/", (req, res) => res.render("home"));
+app.get("/", (req, res) => {
+  res.render("home",{
+    userId: req.session.user?.id || null,
+    adminId: req.session.admin?.id || null
+  })
+})
 app.use("/workers",workerRoute);
 app.use("/users", userRoute);
-app.use("/complaints", complaintRoute);
+app.use("/complaints/user", userComplaintRoute);
+app.use("/complaints/admin", adminComplaintRoute);
 app.use("/history", historyRoute);
+app.use("/admin",adminRoute);
 app.use((req, res, next) => {
   next(new ExpressError("Page Not Found", 404));
 });

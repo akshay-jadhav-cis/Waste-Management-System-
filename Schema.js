@@ -14,15 +14,23 @@ const garbageValidationSchema = Joi.object({
     "any.only": "Garbage type must be dry, water, or mix",
     "string.empty": "Garbage type is required",
   }),
-  description: Joi.string().allow("").optional(),
+
+  description: Joi.string().required().messages({
+    "string.empty": "Description is required",
+  }),
+
   image: Joi.string().required().messages({
     "string.empty": "Image is required",
   }),
+
   address: Joi.string().required().messages({
     "string.empty": "Address is required",
   }),
-   user: Joi.string().required(),
-});
+
+  user: Joi.string().optional(),
+  admin: Joi.string().optional(),
+}).or("user", "admin"); // ✅ At least one must be present
+
 const adminValidationSchema = Joi.object({
     name: Joi.string().trim().required().messages({
         "string.empty": "Name is required"

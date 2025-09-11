@@ -58,9 +58,15 @@
 
         <!-- CTA Buttons -->
         <div class="d-flex flex-wrap gap-2 mt-2">
-          <a href="/complaints/add" class="btn btn-primary btn-lg shadow-sm">Raise a Complaint</a>
-          <a href="/history" class="btn btn-outline-primary btn-lg shadow-sm">All Complaints</a>
-        </div>
+            <% if (adminId) { %>
+                <a href="/complaints/admin/add" class="btn btn-primary btn-lg shadow-sm">Raise a Complaint</a>
+                <a href="/history" class="btn btn-outline-primary btn-lg shadow-sm">All Complaints</a>
+            <% } else if (userId) { %>
+                 <a href="/complaints/user/add" class="btn btn-primary btn-lg shadow-sm">Raise a Complaint</a>
+                  <a href="/history" class="btn btn-outline-primary btn-lg shadow-sm">All Complaints</a>
+              <% } %>
+          </div>
+
 
       </div>
     </div>

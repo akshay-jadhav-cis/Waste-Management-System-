@@ -13,28 +13,42 @@
           <a class="nav-link" href="/">Home</a>
         </li>
 
-        <% if (!currentUser && !currentEmployee) { %>
-          <!-- No one logged in -->
-          <li class="nav-item"><a class="nav-link" href="/users/login">Login</a></li>
-          <li class="nav-item"><a class="nav-link" href="/users/signup">Signup</a></li>
+        <% if (currentAdmin) { %>
+          <!-- ✅ Admin logged in -->
+          <li class="nav-item"><a class="nav-link" href="/admin/dashboard">Dashboard</a></li>
+          <li class="nav-item">
+            <form action="/admin/logout" method="POST" class="d-inline">
+              <button class="btn btn-outline-danger btn-sm">
+                <i class="bi bi-box-arrow-right"></i> Logout
+              </button>
+            </form>
+          </li>
+
+        <% } else if (currentEmployee) { %>
+          <!-- ✅ Employee logged in -->
+          <li class="nav-item"><a class="nav-link" href="/employee/dashboard">My Tasks</a></li>
+          <li class="nav-item">
+            <form action="/workers/employee/logout" method="POST" class="d-inline">
+              <button class="btn btn-outline-danger btn-sm">
+                <i class="bi bi-box-arrow-right"></i> Logout
+              </button>
+            </form>
+          </li>
+
         <% } else if (currentUser) { %>
-          <!-- User logged in -->
-          <li class="nav-item"><a class="nav-link" href="/complaints/add">Raise Complaint</a></li>
+          <!-- ✅ User logged in -->
+          <li class="nav-item"><a class="nav-link" href="/complaints/user/add">Raise Complaint</a></li>
           <li class="nav-item"><a class="nav-link" href="/history">All Complaints</a></li>
           <li class="nav-item">
             <form action="/users/logout" method="POST" class="d-inline">
               <button class="btn btn-outline-danger btn-sm">Logout</button>
             </form>
           </li>
-        <% } else if (currentEmployee) { %>
-          <!-- Employee logged in -->
-          <li class="nav-item">
-            <form action="/workers/employee/logout" method="POST" class="d-inline">
-              <button class="btn btn-outline-danger btn-sm">
-                <i class="bi bi-box-arrow-right"></i> <!-- logout icon -->
-              </button>
-            </form>
-          </li>
+
+        <% } else { %>
+          <!-- ✅ Guest (no one logged in) -->
+          <li class="nav-item"><a class="nav-link" href="/users/login">Login</a></li>
+          <li class="nav-item"><a class="nav-link" href="/users/signup">Signup</a></li>
         <% } %>
 
       </ul>

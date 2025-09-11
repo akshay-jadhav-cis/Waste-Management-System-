@@ -73,6 +73,7 @@ userRoute.post(
       password: await hashPassword(value.password),
     });
     await newUser.save();
+    req.session.user = { id: newUser._id, username: newUser.username };
     req.flash("success", "Signup successful!");
     res.redirect("/");
   })

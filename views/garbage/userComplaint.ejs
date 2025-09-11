@@ -5,9 +5,9 @@
       <div class="col-md-8 col-lg-6">
         <div class="card shadow-lg rounded-3 border-0">
           <div class="card-body p-4">
-            <h3 class="text-center mb-4 text-primary fw-bold">Garbage Complaint Form</h3>
+            <h3 class="text-center mb-4 text-primary fw-bold">User Garbage Complaint Form</h3>
 
-            <form action="<%= adminId ? '/complaints/admin/add' : '/complaints/user/add' %>" method="POST" enctype="multipart/form-data" class="needs-validation" novalidate>
+            <form action="/complaints/user/add" method="POST" enctype="multipart/form-data" class="needs-validation" novalidate>
               
               <!-- Garbage Type -->
               <div class="mb-3">
@@ -55,10 +55,10 @@
     </div>
   </div>
 
-  <!-- Image preview -->
   <script>
     const imageInput = document.getElementById('image');
     const preview = document.getElementById('preview');
+
     imageInput.addEventListener('change', function() {
       const file = this.files[0];
       if(file){
