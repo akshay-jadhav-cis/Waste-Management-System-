@@ -64,7 +64,10 @@
             <% } else if (userId) { %>
                  <a href="/complaints/user/add" class="btn btn-primary btn-lg shadow-sm">Raise a Complaint</a>
                   <a href="/history" class="btn btn-outline-primary btn-lg shadow-sm">All Complaints</a>
-              <% } %>
+             <% } else { %>
+              <a href="/users/login" class="btn btn-primary btn-lg shadow-sm">Login</a>
+              <a href="/users/signup" class="btn btn-outline-primary btn-lg shadow-sm">Sign Up</a>
+          <% } %>
           </div>
 
 

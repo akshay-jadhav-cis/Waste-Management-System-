@@ -1,0 +1,46 @@
+<% layout("layouts/biolerplate") %>
+
+<div class="container py-5">
+  <h2 class="text-primary mb-4 text-center">Worker Dashboard</h2>
+
+  <% if (garbageReports && garbageReports.length > 0) { %>
+    <div class="row g-4">
+      <% garbageReports.forEach(report => { %>
+        <div class="col-md-4">
+          <div class="card h-100 shadow-sm border-0">
+            <div class="card-body">
+              <h5 class="card-title text-primary"><%= report.garbageType.toUpperCase() %> Waste</h5>
+              <p class="card-text text-muted">
+                <strong>Address:</strong> <%= report.user.city %>, <%= report.user.district %>, <%= report.user.state %><br>
+                <strong>Description:</strong> <%= report.description.substring(0, 80) %>...
+              </p>
+              <p>
+                <strong>Status:</strong> 
+                <% if(report.status === "pending") { %>
+                  <span class="badge bg-warning text-dark">Pending</span>
+                <% } else if(report.status === "in-progress") { %>
+                  <span class="badge bg-info text-dark">In Progress</span>
+                <% } else { %>
+                  <span class="badge bg-success">Done</span>
+                <% } %>
+              </p>
+
+              <!-- Assign to employee if not assigned -->
+              <% if(!report.assignedTo && report.status === "pending") { %>
+                <form action="/workers/employee/take/<%= report._id %>" method="POST">
+                  <button type="submit" class="btn btn-primary w-100 mb-2">Take Complaint</button>
+                </form>
+              <% } else if(report.assignedTo && report.assignedTo._id.toString() === employeeId) { %>
+                <span class="text-success fw-semibold">You are handling this complaint</span>
+              <% } %>
+
+              <a href="/garbage/<%= report._id %>/conversation" class="btn btn-outline-primary mt-2 w-100">View Details</a>
+            </div>
+          </div>
+        </div>
+      <% }) %>
+    </div>
+  <% } else { %>
+    <p class="text-center text-muted">No complaints found.</p>
+  <% } %>
+</div>

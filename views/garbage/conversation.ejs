@@ -1,0 +1,72 @@
+<% layout("layouts/biolerplate") %>
+
+<div class="container py-5">
+  <h2 class="text-primary mb-3">Garbage Report Details</h2>
+
+  <div class="card shadow-sm">
+    <div class="card-body">
+      <h5 class="card-title text-primary"><%= report.garbageType.toUpperCase() %> Waste</h5>
+
+      <p class="card-text">
+        <strong>Address:</strong> 
+        <%= report.user?.city || "N/A" %>, 
+        <%= report.user?.district || "N/A" %>, 
+        <%= report.user?.state || "N/A" %>
+      </p>
+
+      <p class="card-text"><strong>Description:</strong> <%= report.description %></p>
+      <p class="card-text"><strong>Status:</strong> 
+        <span class="badge 
+          <%= report.status === 'Pending' ? 'bg-warning text-dark' : 
+              report.status === 'In Progress' ? 'bg-info text-dark' : 
+              'bg-success' %>">
+          <%= report.status %>
+        </span>
+      </p>
+
+      <% if (report.image) { %>
+        <img src="/<%= report.image.replace(/\\/g, '/') %>" 
+             alt="Garbage Image" 
+             class="img-fluid rounded my-3">
+      <% } else { %>
+        <p class="text-muted">No image uploaded</p>
+      <% } %>
+
+      <div class="my-3 d-flex gap-2 flex-wrap">
+        <% if (currentEmployee) { %>
+          <a href="/conversation/<%= report.user?._id %>/<%= currentEmployee._id %>" 
+             class="btn btn-outline-primary">
+             💬 Message User
+          </a>
+
+          <% if (report.assignedTo && report.assignedTo._id.toString() === currentEmployee._id.toString()) { %>
+            
+            <% if (report.status === "Pending") { %>
+              <form action="/employee/task/<%= report._id %>/start" method="POST" class="d-inline">
+                <button type="submit" class="btn btn-warning text-dark">
+                  🚀 Start Task
+                </button>
+              </form>
+            <% } else if (report.status === "in-progress") { %>
+              <form action="/workers/employee/task/<%= report._id %>/done" method="POST" class="d-inline">
+                <button type="submit" class="btn btn-success">
+                  ✅ Mark as Done
+                </button>
+              </form>
+            <% } %>
+
+          <% } %>
+        <% } else if (currentUser && report.assignedTo) { %>
+          <a href="/conversation/<%= currentUser._id %>/<%= report.assignedTo?._id %>" 
+             class="btn btn-outline-success">
+             💬 Message Employee
+          </a>
+        <% } else { %>
+          <span class="text-muted">Login required to message</span>
+        <% } %>
+      </div>
+
+      <a href="/workers/dashboard" class="btn btn-secondary mt-3">⬅ Back to Dashboard</a>
+    </div>
+  </div>
+</div>

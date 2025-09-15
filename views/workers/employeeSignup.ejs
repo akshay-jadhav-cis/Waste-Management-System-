@@ -1,63 +1,66 @@
 <%- layout("layouts/biolerplate") %>
-
 <body class="bg-light d-flex justify-content-center align-items-center vh-100">
-    <div class="container">
-        <div class="row justify-content-center">
-            <div class="col-12 col-md-8 col-lg-5">
-                <div class="card shadow-lg p-4 rounded-4">
-                    <h2 class="text-center mb-4 text-primary fw-bold">Employee Login</h2>
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-12 col-md-8 col-lg-5">
+        <div class="card shadow-lg p-4 rounded-4 border-0">
+          <h2 class="text-center mb-4 text-primary fw-bold">Employee Signup</h2>
 
-                    <form action="/workers/employee/signup" method="post" class="needs-validation" novalidate>
-                        
-                        <!-- Name -->
-                        <div class="mb-3">
-                            <label for="name" class="form-label fw-semibold">Name</label>
-                            <input type="text" class="form-control" id="name" name="Employee[name]" placeholder="Enter Name" required>
-                            <div class="invalid-feedback">Please enter your name.</div>
-                        </div>
-
-                        <!-- Email -->
-                        <div class="mb-3">
-                            <label for="email" class="form-label fw-semibold">Email</label>
-                            <input type="email" class="form-control" id="email" name="Employee[email]" placeholder="Enter Email" required>
-                            <div class="invalid-feedback">Please enter a valid email.</div>
-                        </div>
-
-                        <!-- Age -->
-                        <div class="mb-3">
-                            <label for="age" class="form-label fw-semibold">Age</label>
-                            <input type="number" class="form-control" id="age" name="Employee[age]" placeholder="Enter Age" min="18" required>
-                            <div class="invalid-feedback">Age must be at least 18.</div>
-                        </div>
-
-                        <!-- Address -->
-                        <div class="mb-3">
-                            <label for="address" class="form-label fw-semibold">Address</label>
-                            <textarea class="form-control" id="address" name="Employee[address]" placeholder="Enter Address" rows="2" required></textarea>
-                            <div class="invalid-feedback">Please enter your address.</div>
-                        </div>
-
-                        <!-- Password -->
-                        <div class="mb-3">
-                            <label for="password" class="form-label fw-semibold">Password</label>
-                            <input type="password" class="form-control" id="password" name="Employee[password]" placeholder="Enter Password" required>
-                            <div class="invalid-feedback">Please enter your password.</div>
-                        </div>
-
-                        <!-- Date of Birth -->
-                        <div class="mb-3">
-                            <label for="DOB" class="form-label fw-semibold">Date of Birth</label>
-                            <input type="date" class="form-control" id="DOB" name="Employee[dob]" required>
-                            <div class="invalid-feedback">Please select your date of birth.</div>
-                        </div>
-
-                        <!-- Submit Button -->
-                        <div class="d-grid">
-                            <button type="submit" class="btn btn-primary btn-lg rounded-3">Submit</button>
-                        </div>
-                    </form>
-                </div>
+          <form action="/workers/employee/signup" method="post" class="needs-validation" novalidate>
+            
+            <!-- Name -->
+            <div class="mb-3">
+              <label for="name" class="form-label fw-semibold">Name</label>
+              <input type="text" class="form-control rounded-3" id="name" name="Employee[name]" placeholder="Enter Name" required>
+              <div class="invalid-feedback">Please enter your name.</div>
             </div>
+
+            <!-- Email -->
+            <div class="mb-3">
+              <label for="email" class="form-label fw-semibold">Email</label>
+              <input type="email" class="form-control rounded-3" id="email" name="Employee[email]" placeholder="Enter Email" required>
+              <div class="invalid-feedback">Please enter a valid email.</div>
+            </div>
+
+            <!-- Age -->
+            <div class="mb-3">
+              <label for="age" class="form-label fw-semibold">Age</label>
+              <input type="number" class="form-control rounded-3" id="age" name="Employee[age]" placeholder="Enter Age" min="18" required>
+              <div class="invalid-feedback">Age must be at least 18.</div>
+            </div>
+
+            <!-- Address -->
+            <div class="mb-3">
+              <label for="address" class="form-label fw-semibold">Address</label>
+              <textarea class="form-control rounded-3" id="address" name="Employee[address]" placeholder="Enter Address" rows="2" required></textarea>
+              <div class="invalid-feedback">Please enter your address.</div>
+            </div>
+
+            <!-- Password -->
+            <div class="mb-3">
+              <label for="password" class="form-label fw-semibold">Password</label>
+              <input type="password" class="form-control rounded-3" id="password" name="Employee[password]" placeholder="Enter Password" required>
+              <div class="invalid-feedback">Please enter your password.</div>
+            </div>
+
+            <!-- Date of Birth -->
+            <div class="mb-3">
+              <label for="DOB" class="form-label fw-semibold">Date of Birth</label>
+              <input type="date" class="form-control rounded-3" id="DOB" name="Employee[dob]" required>
+              <div class="invalid-feedback">Please select your date of birth.</div>
+            </div>
+
+            <!-- Submit Button -->
+            <div class="d-grid">
+              <button type="submit" class="btn btn-primary btn-lg rounded-3">Signup</button>
+            </div>
+          </form>
+          <p class="text-center mt-3"> 
+            Already have an account?
+             <a href="/workers/employee/login" class="text-decoration-none text-success fw-semibold">Login here</a>
+          </p>
         </div>
+      </div>
     </div>
+  </div>
 </body>

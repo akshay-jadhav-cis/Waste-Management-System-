@@ -64,6 +64,11 @@ userRoute.post(
       return res.redirect("/users/signup");
     }
     const existingUser = await User.findOne({ username: value.username });
+    const existingEmail = await User.findOne({ email: value.email });
+    if (existingEmail) {
+      req.flash("error", "Email already registered");
+      return res.redirect("/users/signup");
+    }
     if (existingUser) {
       req.flash("error", "Username already exists");
       return res.redirect("/users/signup");

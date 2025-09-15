@@ -21,14 +21,14 @@ const garbageSchema = new Schema({
   },
   status: {
     type: String,
-    enum: ["pending", "done"],
+    enum: ["pending", 'in-progress',"done"],
     default: "pending",
   },
   user: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
   admin: { type: Schema.Types.ObjectId, ref: "Admin" },
 
   createdAt: { type: Date, default: Date.now },
-  assignedTo: { type: Schema.Types.ObjectId, ref: "Employee" },
+  assignedTo: { type: Schema.Types.ObjectId, ref: "Employee",default:null },
 }, { timestamps: true });
 
 const Garbage = mongoose.model("Garbage", garbageSchema);

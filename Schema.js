@@ -10,26 +10,33 @@ const userValidationSchema = Joi.object({
   country: Joi.string().default("India")
 });
 const garbageValidationSchema = Joi.object({
-  garbageType: Joi.string().valid("dry", "water", "mix").required().messages({
-    "any.only": "Garbage type must be dry, water, or mix",
-    "string.empty": "Garbage type is required",
-  }),
+  garbageType: Joi.string()
+    .valid("dry", "water", "mix")
+    .required()
+    .messages({
+      "any.only": "Garbage type must be dry, water, or mix",
+      "string.empty": "Garbage type is required",
+    }),
 
-  description: Joi.string().required().messages({
-    "string.empty": "Description is required",
-  }),
+  description: Joi.string()
+    .required()
+    .messages({ "string.empty": "Description is required" }),
 
-  image: Joi.string().required().messages({
-    "string.empty": "Image is required",
-  }),
+  image: Joi.string()
+    .required()
+    .messages({ "string.empty": "Image is required" }),
 
-  address: Joi.string().required().messages({
-    "string.empty": "Address is required",
-  }),
+  address: Joi.string()
+    .required()
+    .messages({ "string.empty": "Address is required" }),
 
   user: Joi.string().optional(),
   admin: Joi.string().optional(),
-}).or("user", "admin"); // ✅ At least one must be present
+  assignedTo: Joi.string().optional(),
+})
+  .xor("user", "admin") // ✅ Either user or admin must be present
+  .messages({ "object.missing": "A user or admin must submit the complaint" });
+ 
 
 const adminValidationSchema = Joi.object({
     name: Joi.string().trim().required().messages({

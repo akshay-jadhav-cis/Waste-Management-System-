@@ -1,0 +1,74 @@
+<% layout('layouts/biolerplate') %>
+
+<div class="container py-5">
+  <h2 class="text-primary mb-4">
+    Conversation with <%= currentEmployee ? user.name : employee.name %>
+  </h2>
+
+  <!-- Chat Box -->
+  <div id="chat-box" class="border p-3 rounded mb-3" style="height:400px; overflow-y:auto;">
+    <% messages.forEach(msg => { %>
+      <div class="mb-2">
+        <strong><%= msg.sender.name %>:</strong> <%= msg.message %>
+      </div>
+    <% }) %>
+  </div>
+
+  <!-- Chat Form -->
+  <% if(currentEmployee || currentUser) { %>
+    <form id="chat-form" class="d-flex">
+      <input type="text" id="msg-input" class="form-control me-2" placeholder="Type a message..." required>
+      <button type="submit" class="btn btn-primary">Send</button>
+    </form>
+  <% } else { %>
+    <p class="text-muted">Login required to send messages.</p>
+  <% } %>
+</div>
+
+<!-- Socket.IO Script -->
+<script src="/socket.io/socket.io.js"></script>
+<script>
+  const socket = io();
+
+  const currentUserId = "<%= currentUser?._id || currentEmployee?._id %>";
+  const currentUserModel = "<%= currentUser ? 'User' : 'Employee' %>";
+  const conversationId = "<%= conversationId %>";
+  const receiverId = "<%= currentEmployee ? employee._id : user._id %>";
+  const receiverModel = "<%= currentEmployee ? 'Employee' : 'User' %>";
+
+  const chatBox = document.getElementById("chat-box");
+  const chatForm = document.getElementById("chat-form");
+  const msgInput = document.getElementById("msg-input");
+
+  // Join conversation room
+  socket.emit("join", { userId: currentUserId, conversationId });
+
+  // Listen for incoming messages
+  socket.on("receiveMessage", (msg) => {
+    const div = document.createElement("div");
+    div.classList.add("mb-2");
+    div.innerHTML = `<strong>${msg.sender.name}:</strong> ${msg.message}`;
+    chatBox.appendChild(div);
+    chatBox.scrollTop = chatBox.scrollHeight;
+  });
+
+  // Handle sending messages
+  if(chatForm){
+    chatForm.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const message = msgInput.value.trim();
+      if(!message) return;
+
+      socket.emit("sendMessage", {
+        conversationId,
+        senderId: currentUserId,
+        senderModel: currentUserModel,
+        receiverId,
+        receiverModel,
+        message
+      });
+
+      msgInput.value = "";
+    });
+  }
+</script>

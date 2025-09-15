@@ -37,6 +37,10 @@ const employeeSchema = new Schema({
         type:String,
         required:true,
         min:6
+    },
+    count:{
+        type:Number,
+        default:0,
     }
 });
 
