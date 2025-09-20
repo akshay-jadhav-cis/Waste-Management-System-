@@ -20,21 +20,23 @@
               <h5 class="card-title text-dark mb-2">
                 <i class="bi bi-trash text-danger me-2"></i> <%= task.garbageType %> Waste
               </h5>
-              <p><strong>📍 Address:</strong> <%= task.address %></p>
-              <p><strong>👤 User:</strong> <%= task.user.name %></p>
+              <p><strong>📍 Address:</strong> <%= task.user?.city || '' %>, <%= task.user?.district || '' %>, <%= task.user?.state || '' %></p>
+              <p><strong>👤 Submitted By:</strong> <%= task.user?.name || task.admin?.name %></p>
               <p><strong>📌 Status:</strong> 
-                <span class="badge <%= task.status === 'Pending' ? 'bg-warning text-dark' : 'bg-success' %>">
+                <span class="badge <%= task.status === 'pending' ? 'bg-warning text-dark' : 'bg-success' %>">
                   <%= task.status %>
                 </span>
               </p>
 
               <div class="mt-auto d-flex justify-content-between">
-                <a href="/conversation/<%= task.user._id %>/<%= task.assignedTo %>" 
-                   class="btn btn-primary btn-sm rounded-pill">
-                  💬 Chat
-                </a>
+                <% if(task.user) { %>
+                  <a href="/conversation/<%= task._id %>" class="btn btn-primary btn-sm rounded-pill">
+                   💬 Chat
+                  </a>
 
-                <% if(task.status === "Pending") { %>
+                <% } %>
+
+                <% if(task.status === "pending") { %>
                   <form action="/employee/task/<%= task._id %>/done" method="POST">
                     <button type="submit" class="btn btn-outline-success btn-sm rounded-pill">
                       ✅ Mark Done

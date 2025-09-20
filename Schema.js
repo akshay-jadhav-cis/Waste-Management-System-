@@ -22,21 +22,27 @@ const garbageValidationSchema = Joi.object({
     .required()
     .messages({ "string.empty": "Description is required" }),
 
-  image: Joi.string()
+  image: Joi.array()
+    .items(Joi.string().uri())
+    .min(1)
     .required()
-    .messages({ "string.empty": "Image is required" }),
+    .messages({
+      "array.base": "Images must be an array",
+      "array.min": "At least one image is required",
+      "any.required": "Images are required",
+    }),
 
   address: Joi.string()
     .required()
     .messages({ "string.empty": "Address is required" }),
 
-  user: Joi.string().optional(),
-  admin: Joi.string().optional(),
+  user: Joi.string().allow(null),
+  admin: Joi.string().allow(null),
   assignedTo: Joi.string().optional(),
 })
-  .xor("user", "admin") // ✅ Either user or admin must be present
+  .xor("user", "admin")
   .messages({ "object.missing": "A user or admin must submit the complaint" });
- 
+
 
 const adminValidationSchema = Joi.object({
     name: Joi.string().trim().required().messages({

@@ -2,8 +2,13 @@
 
 <div class="container py-5">
   <h2 class="text-primary mb-4">
-    Conversation with <%= currentEmployee ? user.name : employee.name %>
+    Conversation about <strong><%= garbage.garbageType.toUpperCase() %></strong> Waste
   </h2>
+
+  <p>
+    <strong>User:</strong> <%= garbage.user?.name || 'N/A' %> |
+    <strong>Assigned Employee:</strong> <%= garbage.assignedTo?.name || 'Not assigned yet' %>
+  </p>
 
   <!-- Chat Box -->
   <div id="chat-box" class="border p-3 rounded mb-3" style="height:400px; overflow-y:auto;">
@@ -33,8 +38,8 @@
   const currentUserId = "<%= currentUser?._id || currentEmployee?._id %>";
   const currentUserModel = "<%= currentUser ? 'User' : 'Employee' %>";
   const conversationId = "<%= conversationId %>";
-  const receiverId = "<%= currentEmployee ? employee._id : user._id %>";
-  const receiverModel = "<%= currentEmployee ? 'Employee' : 'User' %>";
+  const receiverId = "<%= currentUser ? garbage.assignedTo?._id : garbage.user?._id %>";
+  const receiverModel = "<%= currentUser ? 'Employee' : 'User' %>";
 
   const chatBox = document.getElementById("chat-box");
   const chatForm = document.getElementById("chat-form");

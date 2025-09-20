@@ -7,21 +7,27 @@ const wrapAsync = require("../utils/wrapAsnyc");
 const { validateSchema,isEmployeeLoggedIn } = require("../middleware");
 const { employeeValidationSchema, employeeLoginValidationSchema } = require("../Schema");
 const wrapAsnyc = require("../utils/wrapAsnyc");
+workerRoute.get( "/dashboard", isEmployeeLoggedIn,wrapAsync(async (req, res) => {
+  // if (!req.session.employee) {
+  //   req.flash("error", "You must be logged in as an employee to view this page.");
+  //   return res.redirect("/workers/employee/login");
+  // }
 
-// --------------------- Middleware to check if employee is logged in ---------------------
+  const employeeId = req.session.employee._id;
 
-// --------------------- Dashboard ---------------------
-workerRoute.get("/dashboard", isEmployeeLoggedIn, wrapAsync(async (req, res) => {
-  const garbageReports = await Garbage.find()
-    .populate("user", "username city district state")  // get user info
-    .populate("assignedTo", "name")                   // get assigned employee info
-    .sort({ createdAt: -1 });                         // newest first
+  const garbageReports = await Garbage.find({ assignedTo: employeeId })
+    .populate("user", "name city district state")   // user details
+    .populate("admin", "name")                      // admin details
+    .populate("assignedTo", "name")                // assigned employee details
+    .sort({ createdAt: -1 });
 
-  res.render("workers/dashboard", { 
+  res.render("workers/dashboard", {
     garbageReports,
-    employeeId: req.session.employee._id // pass employee ID to EJS
+    employeeId,
+    currentEmployee: req.session.employee
   });
 }));
+
 
 // --------------------- Take Complaint ---------------------
 workerRoute.post("/employee/take/:id", isEmployeeLoggedIn, wrapAsync(async (req, res) => {
@@ -70,7 +76,7 @@ workerRoute.post("/employee/signup", validateSchema(employeeValidationSchema), w
 
   await employee.save();
   req.flash("success", "Signup successful! Please login.");
-  res.redirect("/workers/employee/login");
+  res.redirect("/workers/dashboard");
 }));
 
 // --------------------- Employee Login ---------------------
@@ -102,21 +108,25 @@ workerRoute.post("/employee/login", validateSchema(employeeLoginValidationSchema
 workerRoute.post("/employee/logout", isEmployeeLoggedIn, (req, res) => {
   req.session.employee = null;
   req.flash("success", "Logged out successfully.");
-  res.redirect("/workers/employee/login");
+  res.redirect("/");
 });
-workerRoute.get("/employee/mytask",wrapAsnyc(async (req, res) => {
-    if (!req.session.employee) {
-      req.flash("error", "You must be logged in as an employee to view tasks.");
-      return res.redirect("/workers/employee/login");
-    }
+workerRoute.get("/employee/mytask", wrapAsync(async (req, res) => {
+  if (!req.session.employee) {
+    req.flash("error", "You must be logged in as an employee to view tasks.");
+    return res.redirect("/workers/employee/login");
+  }
 
-    const employeeId = req.session.employee._id;
-    const tasks = await Garbage.find({ assignedTo: employeeId })
-      .populate("user", "name")
-      .sort({ createdAt: -1 });
+  const employeeId = req.session.employee._id;
 
-    res.render("workers/mytask", { tasks });
+  const tasks = await Garbage.find({ assignedTo: employeeId })
+    .populate("user", "name city district state")   // populate user info
+    .populate("admin", "name")                      // populate admin info
+    .sort({ createdAt: -1 });
+
+  res.render("workers/mytask", { tasks, currentEmployee: req.session.employee });
 }));
+
+
 workerRoute.post("/employee/task/:id/done", wrapAsnyc(async (req, res) => {
   const report = await Garbage.findById(req.params.id).populate("assignedTo");
 

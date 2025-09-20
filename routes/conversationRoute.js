@@ -1,67 +1,61 @@
 const express = require("express");
 const conversationRoute = express.Router();
 const Message = require("../models/Message");
-const User = require("../models/User");
-const Employee = require("../models/Emplooyee"); // fixed typo
 const Garbage = require("../models/Garbage");
-const wrapAsync = require("../utils/wrapAsnyc"); // fixed typo
+const wrapAsync = require("../utils/wrapAsnyc");
 
-// GET conversation page
-conversationRoute.get("/:userId/:employeeId", wrapAsync(async (req, res) => {
-  const { userId, employeeId } = req.params;
+// GET conversation for a specific complaint
+conversationRoute.get("/:complaintId", wrapAsync(async (req, res) => {
+  const { complaintId } = req.params;
 
-  const garbage = await Garbage.findOne({ assignedTo: employeeId, user: userId });
+  const garbage = await Garbage.findById(complaintId)
+    .populate("user", "name")
+    .populate("assignedTo", "name");
+
   if (!garbage) {
-    req.flash("error", "No conversation exists for this complaint.");
+    req.flash("error", "Complaint not found.");
     return res.redirect("back");
   }
 
-  const messages = await Message.find({ conversationId: `${userId}_${employeeId}` })
-    .populate({ path: "sender", select: "name" })
-    .populate({ path: "receiver", select: "name" })
+  const messages = await Message.find({ conversationId: complaintId })
+    .populate("sender", "name")
+    .populate("receiver", "name")
     .sort({ createdAt: 1 });
-
-  const user = await User.findById(userId);
-  const employee = await Employee.findById(employeeId);
-
-  const currentEmployee = req.session.employee || null;
-  const currentUser = req.session.user || null;
 
   res.render("garbage/conversation/show", {
     messages,
-    user,
-    employee,
-    currentEmployee,
-    currentUser,
-    conversationId: `${userId}_${employeeId}`,
+    garbage,
+    currentUser: req.session.user || null,
+    currentEmployee: req.session.employee || null,
+    conversationId: complaintId,
   });
 }));
 
-// POST message (fallback for Socket.io)
-conversationRoute.post("/:userId/:employeeId", wrapAsync(async (req, res) => {
-  const { userId, employeeId } = req.params;
+// POST message for a specific complaint
+conversationRoute.post("/:complaintId", wrapAsync(async (req, res) => {
+  const { complaintId } = req.params;
   const { content } = req.body;
 
-  const garbage = await Garbage.findOne({ assignedTo: employeeId, user: userId });
+  const garbage = await Garbage.findById(complaintId);
   if (!garbage) {
-    req.flash("error", "Cannot send message. No assigned employee for this complaint.");
+    req.flash("error", "Complaint not found.");
     return res.redirect("back");
   }
 
   const isEmployee = !!req.session.employee;
   const senderId = isEmployee ? req.session.employee._id : req.session.user._id;
-  const receiverId = isEmployee ? userId : employeeId;
+  const receiverId = isEmployee ? garbage.user._id : garbage.assignedTo;
 
   await Message.create({
-    conversationId: `${userId}_${employeeId}`,
+    conversationId: complaintId, // unique per complaint
     sender: senderId,
     senderModel: isEmployee ? "Employee" : "User",
     receiver: receiverId,
     receiverModel: isEmployee ? "User" : "Employee",
-    message: content, // <-- matches schema
+    message: content,
   });
 
-  res.redirect(`/conversation/${userId}/${employeeId}`);
+  res.redirect(`/conversation/${complaintId}`);
 }));
 
 module.exports = conversationRoute;

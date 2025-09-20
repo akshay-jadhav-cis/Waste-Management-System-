@@ -10,10 +10,17 @@
           <div class="card h-100 shadow-sm border-0">
             <div class="card-body">
               <h5 class="card-title text-primary"><%= report.garbageType.toUpperCase() %> Waste</h5>
+              
               <p class="card-text text-muted">
-                <strong>Address:</strong> <%= report.user.city %>, <%= report.user.district %>, <%= report.user.state %><br>
+                <strong>Submitted By:</strong> 
+                <%= report.user?.name || report.admin?.name %><br>
+                <strong>Address:</strong> 
+                <%= report.user?.city || '' %>, 
+                <%= report.user?.district || '' %>, 
+                <%= report.user?.state || '' %><br>
                 <strong>Description:</strong> <%= report.description.substring(0, 80) %>...
               </p>
+
               <p>
                 <strong>Status:</strong> 
                 <% if(report.status === "pending") { %>
@@ -25,16 +32,12 @@
                 <% } %>
               </p>
 
-              <!-- Assign to employee if not assigned -->
-              <% if(!report.assignedTo && report.status === "pending") { %>
-                <form action="/workers/employee/take/<%= report._id %>" method="POST">
-                  <button type="submit" class="btn btn-primary w-100 mb-2">Take Complaint</button>
-                </form>
-              <% } else if(report.assignedTo && report.assignedTo._id.toString() === employeeId) { %>
-                <span class="text-success fw-semibold">You are handling this complaint</span>
-              <% } %>
+              <% if(report.user) { %>
+                <a href="/conversation/<%= report._id %>" class="btn btn-outline-primary mt-2 w-100">
+                      💬 Message User
+                </a>
 
-              <a href="/garbage/<%= report._id %>/conversation" class="btn btn-outline-primary mt-2 w-100">View Details</a>
+              <% } %>
             </div>
           </div>
         </div>
