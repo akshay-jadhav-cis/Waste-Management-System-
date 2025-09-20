@@ -14,7 +14,6 @@ garbageRoute.get("/:id/conversation", async (req, res) => {
       req.flash("error", "Garbage report not found");
       return res.redirect("/workers/dashboard");
     }
-    // console.log(report)
     res.render("garbage/conversation", { report });
   } catch (err) {
     console.error(err);

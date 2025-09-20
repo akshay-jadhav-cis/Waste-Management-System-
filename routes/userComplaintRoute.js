@@ -4,38 +4,40 @@ const Garbage = require("../models/Garbage");
 const { garbageValidationSchema } = require("../Schema");
 const { isLoggedIn } = require("../middleware");
 const upload = require("../utils/Multer"); 
-
+const User=require("../models/User");
 const userComplaintRoute = express.Router();
 
+userComplaintRoute.get("/profile", isLoggedIn, async (req, res) => {
+  const user = await User.findById(req.session.user?._id);
+  if (!user) {
+    req.flash("error", "User not found");
+    return res.redirect("/");
+  }
+  res.render("users/myprofile", { currentUser: user });
+});
 userComplaintRoute.get("/add", isLoggedIn, (req, res) => {
   res.render("garbage/userComplaint", {
     userId: req.session.user?._id || null,
   });
 });
-
-// POST: Add User Complaint (single or multiple images)
 userComplaintRoute.post(
   "/add",
   isLoggedIn,
-  upload.array("Garbage[image]", 5), // allow up to 5 images
+  upload.array("images", 5),
   wrapAsync(async (req, res) => {
-    // Normalize images array
-    let images = [];
-    if (req.files && req.files.length > 0) {
-      images = req.files.map((file) => file.path);
-    }
-
+    const images = req.files.map(file => file.path);
     const userId = req.session.user?._id;
+
     const data = {
       ...req.body.Garbage,
-      image: images, // Joi expects array of strings
+      image: images,
       user: userId,
       admin: null,
     };
 
     const { error, value } = garbageValidationSchema.validate(data);
     if (error) {
-      req.flash("error", error.details.map((d) => d.message).join(", "));
+      req.flash("error", error.details.map(d => d.message).join(", "));
       return res.redirect("/complaints/user/add");
     }
 
@@ -45,7 +47,7 @@ userComplaintRoute.post(
   })
 );
 
-// DELETE: Complaint (Owner or Admin)
+// DELETE: Complaint (owner or admin)
 userComplaintRoute.post(
   "/delete/:id",
   isLoggedIn,
@@ -70,13 +72,12 @@ userComplaintRoute.post(
   })
 );
 
-// GET: My Complaints
+// GET: My Complaints (only own)
 userComplaintRoute.get(
   "/mycomplaints",
   isLoggedIn,
   wrapAsync(async (req, res) => {
     const userId = req.session.user._id;
-
     const complaints = await Garbage.find({ user: userId })
       .populate("assignedTo", "name position")
       .sort({ createdAt: -1 });

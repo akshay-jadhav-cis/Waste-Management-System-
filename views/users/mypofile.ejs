@@ -1,0 +1,31 @@
+<% layout("layouts/biolerplate") %>
+
+<div class="container py-5">
+  <h2 class="text-center text-primary mb-4">My Profile</h2>
+
+  <div class="card mx-auto shadow-sm" style="max-width: 500px;">
+    <div class="card-body text-center">
+      <div class="mb-3">
+        <img src="/images/user-placeholder.png" alt="User Avatar" class="rounded-circle" style="width:100px; height:100px; object-fit:cover;">
+      </div>
+
+      <h4 class="card-title mb-3"><%= currentUser?.username || "N/A" %></h4>
+
+      <p><strong>Email:</strong> <%= currentUser?.email || "N/A" %></p>
+      <p><strong>Joined:</strong> 
+        <%= currentUser?.createdAt ? new Date(currentUser.createdAt).toDateString() : "N/A" %>
+      </p>
+
+      <hr>
+
+      <!-- Optional profile actions -->
+      <div class="d-grid gap-2">
+        <a href="/complaints/user/mycomplaints" class="btn btn-primary">My Complaints</a>
+        <a href="/complaints/user/add" class="btn btn-outline-primary">Raise Complaint</a>
+        <form action="/users/logout" method="POST">
+          <button type="submit" class="btn btn-outline-danger">Logout</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

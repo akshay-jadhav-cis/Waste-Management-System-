@@ -5,11 +5,15 @@
       <div class="col-md-8 col-lg-6">
         <div class="card shadow-lg rounded-3 border-0">
           <div class="card-body p-4">
-            <h3 class="text-center mb-4 text-primary fw-bold">Garbage Complaint Form</h3>
+            <h3 class="text-center mb-4 text-primary fw-bold">
+              Garbage Complaint Form
+            </h3>
 
-            <form action="<%= adminId ? '/complaints/admin/add' : '/complaints/user/add' %>" method="POST" enctype="multipart/form-data" class="needs-validation" novalidate>
-              
-              <!-- Garbage Type -->
+            <form action="<%= adminId ? '/complaints/admin/add' : '/complaints/user/add' %>" 
+                  method="POST" 
+                  enctype="multipart/form-data" 
+                  class="needs-validation" 
+                  novalidate>
               <div class="mb-3">
                 <label for="garbageType" class="form-label fw-semibold">Garbage Type</label>
                 <select name="Garbage[garbageType]" id="garbageType" class="form-select" required>
@@ -30,10 +34,12 @@
 
               <!-- Image Upload -->
               <div class="mb-3">
-                <label for="image" class="form-label fw-semibold">Upload Image</label>
-                <input type="file" class="form-control" name="Garbage[image]" id="image" accept="image/*" required>
-                <div class="invalid-feedback">Please upload an image.</div>
-                <img id="preview" class="mt-2" style="max-width: 100%; display:none;" />
+                <label for="images" class="form-label fw-semibold">Upload Images</label>
+                <input type="file" class="form-control" name="Garbage[image]" id="images" accept="image/*" multiple required>
+                <div class="invalid-feedback">Please upload at least one image.</div>
+
+                <!-- Preview container -->
+                <div id="previewContainer" class="mt-2 d-flex flex-wrap gap-2"></div>
               </div>
 
               <!-- Location -->
@@ -55,20 +61,26 @@
     </div>
   </div>
 
-  <!-- Image preview -->
+  <!-- Image preview script -->
   <script>
-    const imageInput = document.getElementById('image');
-    const preview = document.getElementById('preview');
-    imageInput.addEventListener('change', function() {
-      const file = this.files[0];
-      if(file){
+    const imagesInput = document.getElementById('images');
+    const previewContainer = document.getElementById('previewContainer');
+
+    imagesInput.addEventListener('change', function() {
+      previewContainer.innerHTML = ''; // Clear previous previews
+
+      Array.from(this.files).forEach(file => {
         const reader = new FileReader();
-        reader.onload = function(e){
-          preview.src = e.target.result;
-          preview.style.display = 'block';
+        reader.onload = function(e) {
+          const img = document.createElement('img');
+          img.src = e.target.result;
+          img.style.maxWidth = '100px';
+          img.style.height = 'auto';
+          img.classList.add('img-thumbnail');
+          previewContainer.appendChild(img);
         }
         reader.readAsDataURL(file);
-      }
+      });
     });
   </script>
 </body>

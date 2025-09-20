@@ -9,12 +9,9 @@
     <div class="collapse navbar-collapse" id="navbarNav">
       <ul class="navbar-nav ms-auto">
 
-        <li class="nav-item">
-          <a class="nav-link" href="/">Home</a>
-        </li>
+        <li class="nav-item"><a class="nav-link" href="/">Home</a></li>
 
         <% if (currentAdmin) { %>
-          <!-- ✅ Admin logged in -->
           <li class="nav-item"><a class="nav-link" href="/admin/dashboard">Dashboard</a></li>
           <li class="nav-item">
             <form action="/admin/logout" method="POST" class="d-inline">
@@ -25,7 +22,6 @@
           </li>
 
         <% } else if (currentEmployee) { %>
-          <!-- ✅ Employee logged in -->
           <li class="nav-item"><a class="nav-link" href="/workers/employee/mytask">My Tasks</a></li>
           <li class="nav-item">
             <form action="/workers/employee/logout" method="POST" class="d-inline">
@@ -36,18 +32,24 @@
           </li>
 
         <% } else if (currentUser) { %>
-          <!-- ✅ User logged in -->
-          <li class="nav-item"><a class="nav-link" href="/complaints/user/add">Raise Complaint</a></li>
-          <li class="nav-item"><a class="nav-link" href="/history">All Complaints</a></li>
-          <li class="nav-item"><a class="nav-link" href="/complaints/user/mycomplaints">My Complaints</a></li>
-          <li class="nav-item">
-            <form action="/users/logout" method="POST" class="d-inline">
-              <button class="btn btn-outline-danger btn-sm">Logout</button>
-            </form>
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              <i class="bi bi-person-circle me-1" style="font-size:1.3rem;"></i> <%= currentUser.username %>
+            </a>
+            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+              <li><a class="dropdown-item" href="/complaints/user/profile">My Profile</a></li>
+              <li><a class="dropdown-item" href="/complaints/user/mycomplaints">My Complaints</a></li>
+              <li><a class="dropdown-item" href="/complaints/user/add">Raise Complaint</a></li>
+              <li><hr class="dropdown-divider"></li>
+              <li>
+                <form action="/users/logout" method="POST" class="d-inline">
+                  <button type="submit" class="dropdown-item text-danger">Logout</button>
+                </form>
+              </li>
+            </ul>
           </li>
 
         <% } else { %>
-          <!-- ✅ Guest (no one logged in) -->
           <li class="nav-item"><a class="nav-link" href="/users/login">Login</a></li>
           <li class="nav-item"><a class="nav-link" href="/users/signup">Signup</a></li>
         <% } %>
