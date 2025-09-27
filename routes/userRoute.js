@@ -83,4 +83,5 @@ userRoute.post(
     res.redirect("/");
   })
 );
+
 module.exports = userRoute;

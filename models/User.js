@@ -32,7 +32,11 @@ const userSchema=new Schema({
     country:{
         type:String,
         default:"India",
-    }
+    },
+    complaints:[{
+        type:Schema.Types.ObjectId,
+        ref:"Garbage"
+    }]
 
 });
 const Users=mongoose.model("User",userSchema);

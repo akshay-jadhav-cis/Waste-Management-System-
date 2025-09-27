@@ -1,5 +1,5 @@
 module.exports = {
-  // Middleware: check if a normal user is logged in
+  
   isLoggedIn: function (req, res, next) {
     if (!req.session.user) {
       req.flash("error", "You must be logged in to perform this action.");
@@ -8,7 +8,7 @@ module.exports = {
     next();
   },
 
-  // Middleware: check if an admin is logged in
+  
   isAdminLoggedIn: function (req, res, next) {
     if (!req.session.admin) {
       req.flash("error", "You must be logged in as admin to access this page.");
@@ -17,10 +17,10 @@ module.exports = {
     next();
   },
 
-  // Middleware: check if either user OR admin is logged in
+  
   isUserOrAdminLoggedIn: function (req, res, next) {
     if (!req.session.user && !req.session.admin) {
-      req.session.returnTo = req.originalUrl; // optional redirect after login
+      req.session.returnTo = req.originalUrl; 
       req.flash("error", "You must be logged in to view this page.");
 
       // Redirect to login page based on route type
@@ -33,7 +33,6 @@ module.exports = {
     next();
   },
 
-  // Middleware: check if an employee is logged in
   isEmployeeLoggedIn: function (req, res, next) {
     if (!req.session.employee) {
       req.flash("error", "You must be logged in to access this page.");

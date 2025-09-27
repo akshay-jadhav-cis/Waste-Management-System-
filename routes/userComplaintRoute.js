@@ -3,36 +3,49 @@ const wrapAsync = require("../utils/wrapAsnyc");
 const Garbage = require("../models/Garbage");
 const { garbageValidationSchema } = require("../Schema");
 const { isLoggedIn } = require("../middleware");
-const upload = require("../utils/Multer"); 
-const User=require("../models/User");
+const upload = require("../utils/Multer");
+const User = require("../models/User");
+
 const userComplaintRoute = express.Router();
 
+// GET: Profile with complaints populated
 userComplaintRoute.get("/profile", isLoggedIn, async (req, res) => {
-  const user = await User.findById(req.session.user?._id);
+  const user = await User.findById(req.session.user?.id)
+    .populate({
+      path: "complaints",
+      populate: { path: "assignedTo", select: "name position" },
+      options: { sort: { createdAt: -1 } }
+    });
+
   if (!user) {
     req.flash("error", "User not found");
     return res.redirect("/");
   }
-  res.render("users/myprofile", { currentUser: user });
+
+  res.render("users/mypofile", { currentUser: user });
 });
+
+// GET: Add Complaint form
 userComplaintRoute.get("/add", isLoggedIn, (req, res) => {
   res.render("garbage/userComplaint", {
     userId: req.session.user?._id || null,
   });
 });
+
+// POST: Add Complaint
 userComplaintRoute.post(
   "/add",
   isLoggedIn,
   upload.array("images", 5),
   wrapAsync(async (req, res) => {
-    const images = req.files.map(file => file.path);
-    const userId = req.session.user?._id;
+    const images = req.files?.length ? req.files.map(file => file.path) : [];
+    const userId = req.session.user?.id;
 
     const data = {
       ...req.body.Garbage,
       image: images,
       user: userId,
-      admin: null,
+      // admin: null,
     };
 
     const { error, value } = garbageValidationSchema.validate(data);
@@ -41,24 +54,35 @@ userComplaintRoute.post(
       return res.redirect("/complaints/user/add");
     }
 
-    await new Garbage(value).save();
+    const complaint = new Garbage(value);
+    await complaint.save();
+    console.log("User ID from session:", req.session.user);
+
+    await User.findByIdAndUpdate(
+  userId,
+  { $push: { complaints: complaint._id } },
+  { new: true, useFindAndModify: false }
+);
+
+
     req.flash("success", "Complaint submitted successfully!");
     res.redirect("/history");
   })
 );
 
-// DELETE: Complaint (owner or admin)
 userComplaintRoute.post(
   "/delete/:id",
   isLoggedIn,
   wrapAsync(async (req, res) => {
-    const garbage = await Garbage.findById(req.params.id);
+    const complaintId = req.params.id;
+    const garbage = await Garbage.findById(complaintId);
+
     if (!garbage) {
       req.flash("error", "Complaint not found");
       return res.redirect("/history");
     }
 
-    const isOwner = garbage.user?.toString() === req.session.user?._id;
+    const isOwner = garbage.user?.toString() === req.session.user?.id;
     const isAdmin = Boolean(req.session.admin?._id);
 
     if (!isOwner && !isAdmin) {
@@ -66,19 +90,27 @@ userComplaintRoute.post(
       return res.redirect("/history");
     }
 
-    await Garbage.findByIdAndDelete(req.params.id);
+    // Delete complaint
+    await Garbage.findByIdAndDelete(complaintId);
+
+    // Remove complaint reference from user's complaints array
+    if (garbage.user) {
+      await User.findByIdAndUpdate(garbage.user, {
+        $pull: { complaints: complaintId },
+      });
+    }
+
     req.flash("success", "Complaint deleted successfully!");
     res.redirect("/history");
   })
 );
-
-// GET: My Complaints (only own)
 userComplaintRoute.get(
   "/mycomplaints",
   isLoggedIn,
   wrapAsync(async (req, res) => {
-    const userId = req.session.user._id;
-    const complaints = await Garbage.find({ user: userId })
+    const userId = req.session.user.id;
+
+    const complaints = await Garbage.find({ user: userId }) 
       .populate("assignedTo", "name position")
       .sort({ createdAt: -1 });
 
@@ -88,5 +120,6 @@ userComplaintRoute.get(
     });
   })
 );
+
 
 module.exports = userComplaintRoute;

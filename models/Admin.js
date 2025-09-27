@@ -25,28 +25,22 @@ const adminSchema = new Schema(
       enum: ["head", "manager", "other"],
       default: "other"
     },
-
-    // Complaints handled by admin
     garbages: [
       {
         type: Schema.Types.ObjectId,
         ref: "Garbage"
       }
     ],
-
-    // Users managed by admin
     users: [
       {
         type: Schema.Types.ObjectId,
         ref: "User"
       }
     ],
-
-    // Employees assigned
     assignedEmployees: [
       {
         type: Schema.Types.ObjectId,
-        ref: "Employee" // you need an Employee model
+        ref: "Employee" 
       }
     ],
 

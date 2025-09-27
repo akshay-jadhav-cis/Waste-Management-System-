@@ -28,12 +28,10 @@ const app = express();
 const server = http.createServer(app);
 const io = new Server(server);
 
-// --- EJS ---
 app.engine("ejs", ejsMate);
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
 
-// --- Middleware ---
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(methodOverride("_method"));
@@ -47,12 +45,10 @@ app.use(
     secret: process.env.SESSION_SECRET_CODE || "secretcode",
     resave: false,
     saveUninitialized: false,
-    cookie: { maxAge: 1000 * 60 * 60 }, // 1 hour
+    cookie: { maxAge: 1000 * 60 * 60 },
   })
 );
 app.use(flash());
-
-// --- Flash & current session info ---
 app.use((req, res, next) => {
   res.locals.currentUser = req.session.user || null;
   res.locals.currentEmployee = req.session.employee || null;
@@ -61,15 +57,12 @@ app.use((req, res, next) => {
   res.locals.error = req.flash("error");
   next();
 });
-
-// --- MongoDB ---
 mongoose.set("strictQuery", true);
 mongoose
   .connect(process.env.MONGO_URL)
   .then(() => console.log("Database Successfully Connected"))
   .catch((e) => console.log("Database Connection Error:", e));
 
-// --- Routes ---
 app.get("/", (req, res) => {
   res.render("home", {
     userId: req.session.user?.id || null,
@@ -86,19 +79,16 @@ app.use("/admin", adminRoute);
 app.use("/garbage", garbageRoute);
 app.use("/conversation", conversationRoute);
 
-// --- 404 & Error Handling ---
 app.use((req, res, next) => next(new ExpressError("Page Not Found", 404)));
 app.use((err, req, res, next) => {
   const { statusCode = 500 } = err;
   res.status(statusCode).render("error", { err });
 });
 
-const onlineUsers = {}; // { userId: socketId }
+const onlineUsers = {}; 
 
 io.on("connection", (socket) => {
   console.log("User connected:", socket.id);
-
-  // Join a conversation room
   socket.on("join", ({ userId, conversationId }) => {
     onlineUsers[userId] = socket.id;
     if (conversationId) {
@@ -107,12 +97,9 @@ io.on("connection", (socket) => {
     }
   });
 
-  // Send a message
   socket.on("sendMessage", async (data) => {
     try {
       const { conversationId, senderId, senderModel, receiverId, receiverModel, message } = data;
-
-      // Create message in DB
       const newMessage = await Message.create({
         conversationId,
         sender: senderId,
@@ -122,17 +109,15 @@ io.on("connection", (socket) => {
         message,
       });
 
-      // Populate sender's name
+      
       const populatedMessage = await Message.findById(newMessage._id).populate("sender", "name");
 
-      // Emit to the room (conversation)
       io.to(conversationId).emit("receiveMessage", populatedMessage);
     } catch (err) {
       console.error("Error sending message:", err);
     }
   });
 
-  // Disconnect
   socket.on("disconnect", () => {
     for (const [id, sockId] of Object.entries(onlineUsers)) {
       if (sockId === socket.id) delete onlineUsers[id];

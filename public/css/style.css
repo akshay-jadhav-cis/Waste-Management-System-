@@ -32,3 +32,27 @@ footer {
     box-shadow: 0 0 6px rgba(0, 123, 255, 0.5);
     border-color: #007bff;
 }
+/* Complaint Card Hover */
+.complaint-card {
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.complaint-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+}
+
+/* Card Text Styling */
+.card-text {
+  font-size: 0.95rem;
+  line-height: 1.4;
+}
+
+/* Responsive adjustments for mobile */
+@media (max-width: 576px) {
+  .card-body h5 {
+    font-size: 1rem;
+  }
+  .card-text {
+    font-size: 0.9rem;
+  }
+}
