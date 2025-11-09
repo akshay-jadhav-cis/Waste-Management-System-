@@ -34,7 +34,7 @@ userRoute.post(
     }
     req.session.user = { id: user._id, username: user.username };
     req.flash("success", "You are logged in!");
-    res.redirect("/");
+    return res.redirect("/");
   })
 );
 userRoute.post("/logout", (req, res) => {

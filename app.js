@@ -66,7 +66,6 @@ const store = MongoStore.create({
 });
 
 store.on("error", (err) => console.error("SESSION STORE ERROR:", err));
-
 app.use(
   session({
     secret: process.env.SESSION_SECRET_CODE || "dev_secret_change_me",
@@ -74,15 +73,14 @@ app.use(
     saveUninitialized: false,
     store,
     cookie: {
-      maxAge: 1000 * 60 * 60 * 24 * 14, // 14 days
+      maxAge: 1000 * 60 * 60 * 24 * 7, 
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "lax",
+      secure: process.env.NODE_ENV === "production", 
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
     },
   })
 );
 
-// ======= Flash & Locals =======
 app.use(flash());
 app.use((req, res, next) => {
   res.locals.currentUser = req.session.user || null;
@@ -92,8 +90,6 @@ app.use((req, res, next) => {
   res.locals.error = req.flash("error") || [];
   next();
 });
-
-// ======= MongoDB Connection =======
 mongoose.set("strictQuery", true);
 mongoose
   .connect(process.env.MONGO_URL)
@@ -117,7 +113,6 @@ app.use("/admin", adminRoute);
 app.use("/garbage", garbageRoute);
 app.use("/conversation", conversationRoute);
 
-// ======= Error Handling =======
 app.use((req, res, next) => next(new ExpressError("Page Not Found", 404)));
 
 app.use((err, req, res, next) => {
@@ -128,8 +123,6 @@ app.use((err, req, res, next) => {
   const { statusCode = 500 } = err;
   res.status(statusCode).render("error", { err });
 });
-
-// ======= Socket.IO =======
 const onlineUsers = {};
 
 io.on("connection", (socket) => {
