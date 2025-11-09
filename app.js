@@ -41,9 +41,13 @@ app.use(methodOverride("_method"));
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 app.use(express.static(path.join(__dirname, "public")));
 app.use(cookieParser());
-app.use(cors());
+app.use(
+  cors({
+    origin: ["https://waste-management-system-1-f43k.onrender.com"],
+    credentials: true,
+  })
+);
 
-// ======= Debug Helper (to catch double responses) =======
 app.use((req, res, next) => {
   const oldSend = res.send;
   res.send = function (...args) {
@@ -55,7 +59,6 @@ app.use((req, res, next) => {
   next();
 });
 
-// ======= Session Store =======
 const store = MongoStore.create({
   mongoUrl: process.env.MONGO_URL,
   collectionName: "sessions",
