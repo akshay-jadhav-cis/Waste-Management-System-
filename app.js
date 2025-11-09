@@ -40,14 +40,22 @@ app.use(express.static(path.join(__dirname, "public")));
 app.use(cookieParser());
 app.use(cors());
 
+const MongoStore = require("connect-mongo");
+
 app.use(
   session({
-    secret: process.env.SESSION_SECRET_CODE,
+    secret: process.env.SESSION_SECRET_CODE || "dev_secret_change_me",
     resave: false,
     saveUninitialized: false,
-    cookie: { maxAge: 1000 * 60 * 60 },
+    store: MongoStore.create({
+      mongoUrl: process.env.MONGO_URL,
+      collectionName: "sessions",
+      ttl: 14 * 24 * 60 * 60, // 14 days
+    }),
+    cookie: { maxAge: 1000 * 60 * 60 * 24 * 14 },
   })
 );
+
 app.use(flash());
 app.use((req, res, next) => {
   res.locals.currentUser = req.session.user || null;
